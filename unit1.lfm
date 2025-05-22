@@ -1,0 +1,44 @@
+object Form1: TForm1
+  Left = 1215
+  Height = 739
+  Top = 117
+  Width = 301
+  Caption = 'Tetris'
+  ClientHeight = 739
+  ClientWidth = 301
+  Color = 4194304
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'MS Sans Serif'
+  KeyPreview = True
+  LCLVersion = '4.0.0.4'
+  OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
+  object CanvasPanel: TImage
+    Left = 0
+    Height = 600
+    Top = 0
+    Width = 301
+    Align = alTop
+    OnPaint = CanvasPanelPaint
+  end
+  object ScoreLabel: TLabel
+    Left = 8
+    Height = 25
+    Top = 608
+    Width = 100
+    Caption = 'ScoreLabel'
+    Color = clYellow
+    Font.Color = clYellow
+    Font.Height = -21
+    Font.Name = 'MS Sans Serif'
+    ParentColor = False
+    ParentFont = False
+  end
+  object GameTimer: TTimer
+    Interval = 500
+    OnTimer = GameTimerTimer
+    Left = 224
+    Top = 600
+  end
+end
