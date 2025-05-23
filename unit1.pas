@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls,
-  LCLIntf, LCLType, uplaysound,    LazJPG, LazTGA    ;
+  LCLIntf, LCLType, uplaysound,  LazJPG, LazTGA    ;
 
 // --- Costanti ---
 const
@@ -40,10 +40,12 @@ type
   TForm1 = class(TForm)
     CanvasPanel: TImage;
     playsound1: Tplaysound;
+    playsound2: Tplaysound;
     ScoreLabel: TLabel;
     GameTimer: TTimer;
 
-    procedure Button1Click(Sender: TObject);
+
+    procedure CanvasPanelClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -64,7 +66,7 @@ type
 
     // NUOVO: Variabili per il menu
     FGameMode: TGameMode; // Stato attuale del gioco
-    FMenuOptions: array[0..2] of String; // Opzioni del menu: Gioca, Record, Esci
+    FMenuOptions: array[0..3] of String; // Opzioni del menu: Gioca, Record, Esci
     FSelectedMenuOption: Integer; // Opzione selezionata nel menu
 
     FSfondo: TBitmap; // Variabile per l'immagine di sfondo
@@ -143,7 +145,8 @@ begin
   FGameMode := gmMenu;
   FMenuOptions[0] := 'Gioca';
   FMenuOptions[1] := 'Record'; // Non implementato, ma per mostrare l'opzione
-  FMenuOptions[2] := 'Esci';
+  FMenuOptions[2] := 'About';
+  FMenuOptions[3] := 'Esci';
   FSelectedMenuOption := 0; // Seleziona la prima opzione di default
 
     // Carica l'immagine di sfondo
@@ -177,6 +180,59 @@ begin
   end;
 
   DrawGame; // Disegna il menu iniziale
+end;
+
+procedure TForm1.CanvasPanelClick(Sender: TObject);
+var
+  i: Integer;
+  TextWidth, TextHeight: Integer;
+  MenuX, MenuY: Integer;
+  OptionRect: TRect;
+  ScreenMousePos: TPoint; // Per le coordinate del mouse sullo schermo
+  PanelMousePos: TPoint;  // Per le coordinate del mouse relative al CanvasPanel
+begin
+  // Gestiamo il click solo in modalità menu
+  if FGameMode = gmMenu then
+  begin
+    // Ottieni le coordinate attuali del cursore sullo schermo
+    GetCursorPos(ScreenMousePos);
+    // Converti le coordinate dello schermo in coordinate relative al CanvasPanel
+    PanelMousePos := CanvasPanel.ScreenToClient(ScreenMousePos);
+
+    // Calcola le dimensioni e la posizione delle opzioni del menu in modo simile a ShowMenu
+    CanvasPanel.Canvas.Font.Assign(ScoreLabel.Font);
+    CanvasPanel.Canvas.Font.Size := 24; // Deve corrispondere alla dimensione usata in ShowMenu
+
+    MenuY := (CanvasPanel.Height div 2) - 50; // Posizione Y iniziale per le opzioni
+
+    for i := Low(FMenuOptions) to High(FMenuOptions) do
+    begin
+      TextWidth := CanvasPanel.Canvas.TextWidth(FMenuOptions[i]);
+      TextHeight := CanvasPanel.Canvas.TextHeight(FMenuOptions[i]); // Ottieni l'altezza del testo
+
+      MenuX := (CanvasPanel.Width div 2) - (TextWidth div 2);
+
+      // Definisci l'area rettangolare per l'opzione
+      OptionRect := Rect(MenuX, MenuY, MenuX + TextWidth, MenuY + TextHeight);
+
+      // Controlla se il click (PanelMousePos.X, PanelMousePos.Y) è all'interno di questa area
+      if PtInRect(OptionRect, PanelMousePos) then
+      begin
+        FSelectedMenuOption := i; // Aggiorna l'opzione selezionata (per l'evidenziazione visiva)
+        DrawGame; // Ridisegna per mostrare la selezione
+
+        // Esegui l'azione associata all'opzione cliccata
+        case FSelectedMenuOption of
+          0: Restart; // Gioca
+          1: ShowMessage('Funzione Record non implementata.'); // Record
+          2: ShowMessage('Funzione About non implementata.'); // About
+          3: Close; // Esci
+        end;
+        Exit; // Esci dal ciclo una volta trovata l'opzione cliccata
+      end;
+      Inc(MenuY, 40); // Sposta la prossima opzione più in basso (deve corrispondere a ShowMenu)
+    end;
+  end;
 end;
 
 
@@ -214,7 +270,8 @@ begin
               case FSelectedMenuOption of
                 0: Restart; // Gioca
                 1: ShowMessage('Funzione Record non implementata.'); // Record
-                2: Close; // Esci
+                2: ShowMessage('Funzione About non implementata.'); // Record
+                3: Close; // Esci
               end;
             end;
           VK_ESCAPE: // ESC
