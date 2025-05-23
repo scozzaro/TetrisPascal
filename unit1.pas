@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls,
-  LCLIntf, LCLType;
+  LCLIntf, LCLType, uplaysound,    LazJPG, LazTGA    ;
 
 // --- Costanti ---
 const
@@ -39,10 +39,13 @@ type
 
   TForm1 = class(TForm)
     CanvasPanel: TImage;
+    playsound1: Tplaysound;
     ScoreLabel: TLabel;
     GameTimer: TTimer;
 
+    procedure Button1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     // RIMOSSO: procedure FormKeyPress(Sender: TObject; var Key: Char);
     procedure GameTimerTimer(Sender: TObject);
@@ -63,6 +66,9 @@ type
     FGameMode: TGameMode; // Stato attuale del gioco
     FMenuOptions: array[0..2] of String; // Opzioni del menu: Gioca, Record, Esci
     FSelectedMenuOption: Integer; // Opzione selezionata nel menu
+
+    FSfondo: TBitmap; // Variabile per l'immagine di sfondo
+    FSfondoJPEG : TJPGImage;
 
     procedure Restart;
     procedure NewPiece;
@@ -91,6 +97,9 @@ implementation
 // --- Implementazione dei metodi della Form ---
 
 procedure TForm1.FormCreate(Sender: TObject);
+
+var
+  SfondoPath: String;
 begin
   // Inizializza le forme dei pezzi come array dinamici
   SetLength(FShapesData[0], 1); SetLength(FShapesData[0][0], 4);
@@ -137,7 +146,47 @@ begin
   FMenuOptions[2] := 'Esci';
   FSelectedMenuOption := 0; // Seleziona la prima opzione di default
 
+    // Carica l'immagine di sfondo
+  //FSfondo := TBitmap.Create; // Crea un'istanza di TBitmap
+  SfondoPath := ExtractFilePath(Application.ExeName) + 'image' + PathDelim + 'sfondo1.jpg'; // Costruisce il percorso
+
+
+   FSfondoJPEG:=TJPGImage.Create;
+
+    if FileExists(ExtractFilePath(Application.ExeName) + 'sound\vie.wav') then
+    begin
+
+       PlaySound1.SoundFile:=PChar(ExtractFilePath(Application.ExeName) + 'sound\vie.wav');
+
+    end;
+
+
+
+  if FileExists(SfondoPath) then
+  begin
+    try
+      FSfondoJPEG.LoadFromFile(SfondoPath); // Carica l'immagine
+    except
+      on E: Exception do
+        ShowMessage('Errore nel caricamento sfondo: ' + E.Message);
+    end;
+  end
+  else
+  begin
+    ShowMessage('File sfondo1.jpg non trovato in: ' + SfondoPath);
+  end;
+
   DrawGame; // Disegna il menu iniziale
+end;
+
+
+procedure TForm1.FormDestroy(Sender: TObject);
+begin
+      if Assigned(FSfondoJPEG) then
+  begin
+    FSfondoJPEG.Free; // Libera la memoria dell'immagine
+    FSfondoJPEG := nil; // Imposta a nil per sicurezza
+  end;
 end;
 
 procedure TForm1.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -310,6 +359,8 @@ begin
   end;
 end;
 
+
+
 procedure TForm1.ClearLines;
 var
   r, c: Integer;
@@ -339,13 +390,16 @@ begin
 
     if not IsRowFull then
     begin
+      // Copia la riga nel nuovo grid
       for c := 0 to GRID_WIDTH - 1 do
         NewGrid[NewRowIndex, c] := FGrid[r, c];
       Dec(NewRowIndex);
     end
     else
     begin
+      // Riga piena, viene cancellata → suona!
       Inc(LinesCleared);
+      PlaySound1.Execute; // Riproduce il suono esattamente qui, per ogni riga cancellata
     end;
   end;
 
@@ -354,6 +408,8 @@ begin
   FScore := FScore + (LinesCleared * LinesCleared);
   ScoreLabel.Caption := 'Score: ' + IntToStr(FScore);
 end;
+
+
 
 procedure TForm1.RotatePiece;
 var
@@ -444,16 +500,30 @@ var
   r, c: Integer;
   RectLeft, RectTop, RectRight, RectBottom: Integer;
 begin
-  // Pulisce l'intero canvas
-  CanvasPanel.Canvas.Brush.Color := clBlack;
-  CanvasPanel.Canvas.FillRect(0, 0, CanvasPanel.Width, CanvasPanel.Height);
+  // Disegna l'immagine di sfondo per pulire il canvas
+  if Assigned(FSfondoJPEG) and (FSfondoJPEG.Width > 0) and (FSfondoJPEG.Height > 0) then
+  begin
+    // Disegna l'immagine, scalando se necessario per riempire il CanvasPanel
+    CanvasPanel.Canvas.StretchDraw(
+      Rect(0, 0, CanvasPanel.Width, CanvasPanel.Height),
+      FSfondoJPEG
+    );
+  end
+  else
+  begin
+    // Se lo sfondo non è stato caricato, usa un colore solido (come facevi prima)
+    CanvasPanel.Canvas.Brush.Color := clBlack;
+    CanvasPanel.Canvas.FillRect(0, 0, CanvasPanel.Width, CanvasPanel.Height);
+  end;
+
 
   // Disegna in base alla modalità di gioco
   case FGameMode of
     gmMenu:
-      ShowMenu; // Disegna il menu
+      ShowMenu; // Disegna il menu (che sovrascriverà lo sfondo)
     gmPlaying:
       begin
+        // ... (il tuo codice esistente per disegnare la griglia e il pezzo) ...
         // Disegna i blocchi fissi nella griglia
         for r := 0 to GRID_HEIGHT - 1 do
         begin
@@ -497,7 +567,8 @@ begin
       end;
     gmGameOver:
       begin
-        // Disegna la griglia finale e il testo Game Over
+        // ... (il tuo codice esistente per disegnare la griglia e il testo Game Over) ...
+        // Disegna la griglia finale (sulla base dello sfondo)
         for r := 0 to GRID_HEIGHT - 1 do
         begin
           for c := 0 to GRID_WIDTH - 1 do
@@ -516,6 +587,7 @@ begin
           end;
         end;
 
+        // Disegna il testo Game Over (sopra lo sfondo e la griglia)
         CanvasPanel.Canvas.Font.Assign(ScoreLabel.Font);
         CanvasPanel.Canvas.Font.Size := 36;
         CanvasPanel.Canvas.Font.Color := clRed;
