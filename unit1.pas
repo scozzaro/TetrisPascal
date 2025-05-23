@@ -103,16 +103,27 @@ var
   SfondoPath: String;
 begin
   // Inizializza le forme dei pezzi come array dinamici
-  SetLength(FShapesData[0], 1); SetLength(FShapesData[0][0], 4);
-  FShapesData[0][0,0] := 1; FShapesData[0][0,1] := 1; FShapesData[0][0,2] := 1; FShapesData[0][0,3] := 1;
+  // Inizializza il pezzo 'I' (bastone) - Colore: clAqua (cyan)
+  SetLength(FShapesData[0], 1);      // Questo pezzo avrà 1 riga
+  SetLength(FShapesData[0][0], 4);   // La riga 0 avrà 4 colonne
+  FShapesData[0][0,0] := 1;          // Blocco nella cella [0,0]
+  FShapesData[0][0,1] := 1;          // Blocco nella cella [0,1]
+  FShapesData[0][0,2] := 1;          // Blocco nella cella [0,2]
+  FShapesData[0][0,3] := 1;          // Blocco nella cella [0,3]
 
-  SetLength(FShapesData[1], 2); SetLength(FShapesData[1][0], 2); SetLength(FShapesData[1][1], 2);
-  FShapesData[1][0,0] := 1; FShapesData[1][0,1] := 1;
-  FShapesData[1][1,0] := 1; FShapesData[1][1,1] := 1;
+  // Inizializza il pezzo 'O' (quadrato) - Colore: clYellow (giallo)
+  SetLength(FShapesData[1], 2);      // Questo pezzo avrà 2 righe
+  SetLength(FShapesData[1][0], 2);   // La riga 0 avrà 2 colonne
+  SetLength(FShapesData[1][1], 2);   // La riga 1 avrà 2 colonne
+  FShapesData[1][0,0] := 1; FShapesData[1][0,1] := 1; // Riga 0: [1][1]
+  FShapesData[1][1,0] := 1; FShapesData[1][1,1] := 1; // Riga 1: [1][1]
 
-  SetLength(FShapesData[2], 2); SetLength(FShapesData[2][0], 3); SetLength(FShapesData[2][1], 3);
-  FShapesData[2][0,0] := 0; FShapesData[2][0,1] := 1; FShapesData[2][0,2] := 0;
-  FShapesData[2][1,0] := 1; FShapesData[2][1,1] := 1; FShapesData[2][1,2] := 1;
+  // Inizializza il pezzo 'T' - Colore: clPurple (viola)
+  SetLength(FShapesData[2], 2);      // 2 righe
+  SetLength(FShapesData[2][0], 3);   // Riga 0 avrà 3 colonne
+  SetLength(FShapesData[2][1], 3);   // Riga 1 avrà 3 colonne
+  FShapesData[2][0,0] := 0; FShapesData[2][0,1] := 1; FShapesData[2][0,2] := 0; // Riga 0: [0][1][0]
+  FShapesData[2][1,0] := 1; FShapesData[2][1,1] := 1; FShapesData[2][1,2] := 1; // Riga 1: [1][1][1]
 
   SetLength(FShapesData[3], 2); SetLength(FShapesData[3][0], 3); SetLength(FShapesData[3][1], 3);
   FShapesData[3][0,0] := 1; FShapesData[3][0,1] := 1; FShapesData[3][0,2] := 0;
@@ -122,9 +133,12 @@ begin
   FShapesData[4][0,0] := 0; FShapesData[4][0,1] := 1; FShapesData[4][0,2] := 1;
   FShapesData[4][1,0] := 1; FShapesData[4][1,1] := 1; FShapesData[4][1,2] := 0;
 
-  SetLength(FShapesData[5], 2); SetLength(FShapesData[5][0], 3); SetLength(FShapesData[5][1], 3);
-  FShapesData[5][0,0] := 1; FShapesData[5][0,1] := 0; FShapesData[5][0,2] := 0;
-  FShapesData[5][1,0] := 1; FShapesData[5][1,1] := 1; FShapesData[5][1,2] := 1;
+  // Inizializza il pezzo 'L' - Colore: $0000A5FF (arancione)
+  SetLength(FShapesData[5], 2);      // 2 righe
+  SetLength(FShapesData[5][0], 3);   // Riga 0 avrà 3 colonne
+  SetLength(FShapesData[5][1], 3);   // Riga 1 avrà 3 colonne
+  FShapesData[5][0,0] := 1; FShapesData[5][0,1] := 0; FShapesData[5][0,2] := 0; // Riga 0: [1][0][0]
+  FShapesData[5][1,0] := 1; FShapesData[5][1,1] := 1; FShapesData[5][1,2] := 1; // Riga 1: [1][1][1]
 
   SetLength(FShapesData[6], 2); SetLength(FShapesData[6][0], 3); SetLength(FShapesData[6][1], 3);
   FShapesData[6][0,0] := 0; FShapesData[6][0,1] := 0; FShapesData[6][0,2] := 1;
