@@ -40,7 +40,6 @@ type
   TForm1 = class(TForm)
     CanvasPanel: TImage;
     playsound1: Tplaysound;
-    playsound2: Tplaysound;
     ScoreLabel: TLabel;
     GameTimer: TTimer;
 
