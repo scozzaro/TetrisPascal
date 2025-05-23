@@ -1,7 +1,7 @@
 object Form1: TForm1
-  Left = 1215
+  Left = 1368
   Height = 739
-  Top = 117
+  Top = 89
   Width = 301
   Caption = 'Tetris'
   ClientHeight = 739
@@ -11,8 +11,9 @@ object Form1: TForm1
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   KeyPreview = True
-  LCLVersion = '4.0.0.4'
+  LCLVersion = '4.99.0.0'
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
   object CanvasPanel: TImage
     Left = 0
@@ -40,5 +41,25 @@ object Form1: TForm1
     OnTimer = GameTimerTimer
     Left = 224
     Top = 600
+  end
+  object playsound1: Tplaysound
+    About.Description.Strings = (
+      'Plays WAVE sounds in Windows or Linux'#13#10'Public methods: Execute and StopSound'
+    )
+    About.Title = 'About PlaySound'
+    About.Height = 400
+    About.Width = 400
+    About.Font.Color = clNavy
+    About.Font.Height = -13
+    About.BackGroundColor = clCream
+    About.Version = '0.0.8'
+    About.Authorname = 'Gordon Bamber'
+    About.Organisation = 'Public Domain'
+    About.AuthorEmail = 'minesadorada@charcodelvalle.com'
+    About.ComponentName = 'PlaySound'
+    About.LicenseType = abModifiedGPL
+    PlayCommand = 'sndPlaySound'
+    Left = 136
+    Top = 640
   end
 end
